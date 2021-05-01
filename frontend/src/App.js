@@ -1,16 +1,14 @@
-import logo from './logo.svg';
 import './App.css';
 import Navigation from './navigation/Navigation';
 import Container from 'react-bootstrap/Container'
-import Row from 'react-bootstrap/Row'
-import Col from 'react-bootstrap/Col'
+import PostEditor from './editor/PostEditor'
 
 function App() {
   return (
     <div className="App">
       <Container className="justify-content-md-center">
         <Navigation isLoggedIn={false} userName="Vasya Pupkin" />
-        
+        <PostEditor />
       </Container>
     </div>
   );
