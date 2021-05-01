@@ -5,3 +5,11 @@ img {
 p {
     margin: 0 0;
 }
+
+.words-counter {
+    opacity: 0.5;
+}
+
+.warningtext {
+    color: red;
+}
