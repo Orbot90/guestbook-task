@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "guestbook.images.host",
+      "type": "java.lang.String",
+      "description": "Host name for the images server"
+    }
+  ] }

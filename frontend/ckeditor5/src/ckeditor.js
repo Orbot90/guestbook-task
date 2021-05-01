@@ -11,7 +11,6 @@ import Bold from '@ckeditor/ckeditor5-basic-styles/src/bold';
 import Italic from '@ckeditor/ckeditor5-basic-styles/src/italic';
 import Image from '@ckeditor/ckeditor5-image/src/image';
 import ImageStyle from '@ckeditor/ckeditor5-image/src/imagestyle';
-import ImageResize from '@ckeditor/ckeditor5-image/src/imageresize';
 import ImageInsert from '@ckeditor/ckeditor5-image/src/imageinsert';
 import ImageToolbar from '@ckeditor/ckeditor5-image/src/imagetoolbar';
 import AutoImage from '@ckeditor/ckeditor5-image/src/autoimage';
@@ -23,6 +22,7 @@ import FontSize from '@ckeditor/ckeditor5-font/src/fontsize';
 import RemoveFormat from '@ckeditor/ckeditor5-remove-format/src/removeformat';
 import Base64UploadAdapter from '@ckeditor/ckeditor5-upload/src/adapters/base64uploadadapter';
 import Heading from '@ckeditor/ckeditor5-heading/src/heading'
+import SimpleUploadAdapter from '@ckeditor/ckeditor5-upload/src/adapters/simpleuploadadapter';
 
 export default class InlineEditor extends InlineEditorBase {}
 
@@ -37,14 +37,14 @@ InlineEditor.builtinPlugins = [
 	ImageUpload,
 	Link,
 	TextTransformation,
-	ImageResize,
 	ImageInsert,
 	AutoImage,
 	FontColor,
 	FontSize,
 	Base64UploadAdapter,
 	RemoveFormat,
-	Heading
+	Heading,
+	SimpleUploadAdapter
 ];
 
 // Editor configuration.
@@ -104,31 +104,6 @@ InlineEditor.defaultConfig = {
 			'|',
 			'removeFormat'	
 
-		]
-	},
-	image: {
-		resizeOptions: [
-            {
-                name: 'resizeImage:original',
-                value: null,
-                icon: 'original'
-            },
-            {
-                name: 'resizeImage:50',
-                value: '50',
-                icon: 'medium'
-            },
-            {
-                name: 'resizeImage:75',
-                value: '75',
-                icon: 'large'
-            }
-        ],
-		toolbar: [
-			'resizeImage',
-            'resizeImage:50',
-            'resizeImage:75',
-            'resizeImage:original',
 		]
 	},
 	// This value must be kept in sync with the language defined in webpack.config.js.

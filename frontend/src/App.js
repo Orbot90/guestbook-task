@@ -7,7 +7,7 @@ function App() {
   return (
     <div className="App">
       <Container className="justify-content-md-center">
-        <Navigation isLoggedIn={false} userName="Vasya Pupkin" />
+          <Navigation isLoggedIn={false} userName="Vasya Pupkin" />
         <PostEditor />
       </Container>
     </div>

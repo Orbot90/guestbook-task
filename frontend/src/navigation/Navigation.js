@@ -4,7 +4,7 @@ import Nav from 'react-bootstrap/Nav'
 import Dropdown from 'react-bootstrap/Dropdown'
 import ButtonGroup from 'react-bootstrap/ButtonGroup'
 import Button from 'react-bootstrap/Button'
-import React, { Component } from 'react';
+import React from 'react';
 
 class Navigation extends React.Component {
 
@@ -15,7 +15,7 @@ class Navigation extends React.Component {
       userName: "Vasya Pupkin"
     }
 
-    this.signIn = this.signIn.bind(this)
+    this.onSignIn = this.onSignIn(this)
     this.signOut = this.signOut.bind(this)
   }
 
@@ -45,6 +45,9 @@ class Navigation extends React.Component {
             </Dropdown.Toggle>
 
             <Dropdown.Menu>
+              <Dropdown.Item>Profile</Dropdown.Item>
+            </Dropdown.Menu>
+            <Dropdown.Menu>
               <Dropdown.Item onSelect={this.signOut}>Sign out</Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown> :
@@ -61,7 +64,7 @@ class Navigation extends React.Component {
     })
   }
 
-  signIn() {
+  onSignIn() {
     this.setState({
       isLoggedIn: true,
       userName: "Vasya Pupkin"
