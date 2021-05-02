@@ -23,12 +23,8 @@ public class DatabaseImageServiceImpl implements ImageService {
     }
 
     @Override
-    public String saveImage(byte[] image) {
+    public String saveImage(byte[] image, Long userId) {
         try {
-            // TODO: check if is authenticated, get user id from auth
-
-            // mocking userId before auth is implemented
-            Long userId = 42L;
 
             String hash = hashService.calculateHash(image);
 

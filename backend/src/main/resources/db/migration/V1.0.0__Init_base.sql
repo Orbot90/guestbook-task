@@ -12,7 +12,7 @@ create table posts
         primary key,
     user_id     bigint        not null,
     data        varchar(1000) not null,
-    date        datetime      null,
+    date        timestamp      null,
     edited_by   bigint        null,
-    edited_date datetime      null
+    edited_date timestamp      null
 );

@@ -17,6 +17,7 @@ public class Post {
     private String date;
     private String editedBy;
     private String editedDate;
+    private boolean approved;
 
     public Long getId() {
         return id;
@@ -79,5 +80,13 @@ public class Post {
     @Override
     public int hashCode() {
         return Objects.hash(id, userName, data);
+    }
+
+    public void setApproved(boolean approved) {
+        this.approved = approved;
+    }
+
+    public boolean getApproved() {
+        return approved;
     }
 }

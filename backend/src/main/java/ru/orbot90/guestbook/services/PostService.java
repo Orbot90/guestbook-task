@@ -2,17 +2,24 @@ package ru.orbot90.guestbook.services;
 
 import org.springframework.stereotype.Service;
 import ru.orbot90.guestbook.dao.PostDao;
+import ru.orbot90.guestbook.dao.UserDao;
 import ru.orbot90.guestbook.entities.PostEntity;
+import ru.orbot90.guestbook.entities.UserEntity;
 import ru.orbot90.guestbook.exception.DataNotFoundException;
 import ru.orbot90.guestbook.model.Post;
+import ru.orbot90.guestbook.model.PostApproval;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.TimeZone;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author Iurii Plevako orbot90@gmail.com
@@ -24,61 +31,67 @@ public class PostService {
             .ofLocalizedDateTime(FormatStyle.LONG);
 
     private final PostDao postDao;
+    private final UserDao userDao;
 
-    public PostService(PostDao postDao) {
+    public PostService(PostDao postDao, UserDao userDao) {
         this.postDao = postDao;
+        this.userDao = userDao;
     }
 
-    public Post createPost(Post post) {
-        // TODO check if is authenticated
+    public Post createPost(Post post, TimeZone timeZone) {
         PostEntity postEntity = new PostEntity();
 
         postEntity.setData(post.getData());
-        // mocking userId before auth is implemented
-        postEntity.setUserId(42L);
         postEntity.setDate(LocalDateTime.now());
-        this.postDao.save(postEntity);
-        return this.converToDTO(postEntity);
+        UserEntity user = userDao.findByUserName(post.getUserName()).orElseThrow(() ->
+                new DataNotFoundException("User " + post.getUserName() + " does not exist"));
+        postEntity.setUser(user);
+        postEntity = this.postDao.save(postEntity);
+        return this.converToDTO(postEntity, timeZone);
     }
 
-    public List<Post> getAllPosts() {
-        return this.postDao.findAll().stream()
-                .sorted(Comparator.comparing(PostEntity::getDate))
-                .map(this::converToDTO)
+    public List<Post> getAllPosts(TimeZone timeZone, PostApproval approval) {
+        Stream<PostEntity> postsStream = this.postDao.findAll().stream();
+        if (approval == PostApproval.APPROVED) {
+            postsStream = postsStream.filter(PostEntity::isApproved);
+        }
+                return postsStream.sorted(Comparator.comparing(PostEntity::getDate))
+                .map(post -> converToDTO(post, timeZone))
                 .collect(Collectors.toList());
     }
 
-    private Post converToDTO(PostEntity entity) {
+    private Post converToDTO(PostEntity entity, TimeZone timeZone) {
         Post dto = new Post();
         dto.setData(entity.getData());
-        dto.setDate(DATE_FORMAT.format(entity.getDate()));
+        dto.setDate(DATE_FORMAT.withZone(timeZone.toZoneId()).format(entity.getDate()));
         dto.setId(entity.getId());
-        // TODO: map user ID to user name when User is implemented
-//        dto.setUserName(entity.getUserId());
-//        dto.setEditedBy(entity.getEditedBy());
+        dto.setApproved(entity.isApproved());
+
+        dto.setUserName(entity.getUser().getUserName());
+        Optional.ofNullable(entity.getEditedBy())
+                .map(UserEntity::getUserName)
+                .ifPresent(dto::setEditedBy);
 
         Optional.ofNullable(entity.getEditedDate())
-                .map(DATE_FORMAT::format)
+                .map(date -> DATE_FORMAT.withZone(timeZone.toZoneId()).format(date))
                 .ifPresent(dto::setEditedDate);
         return dto;
     }
 
-    public Post updatePost(Long id, Post post) {
-        // TODO get user id from auth, check if user is allowed to edit
-        // mocking before auth implemented
-        Long editorId = 42L;
-
+    public Post updatePost(Long id, Post post, TimeZone timeZone) {
         PostEntity existingPost = this.postDao.findById(id)
                 .orElseThrow(DataNotFoundException::new);
         existingPost.setData(post.getData());
-        existingPost.setEditedBy(editorId);
+        UserEntity editor = userDao.findByUserName(post.getEditedBy())
+                .orElseThrow(() -> new DataNotFoundException("User " +
+                        post.getEditedBy() + " doesn't exist"));
+        existingPost.setEditedBy(editor);
         existingPost.setEditedDate(LocalDateTime.now());
         this.postDao.save(existingPost);
-        return this.converToDTO(existingPost);
+        return this.converToDTO(existingPost, timeZone);
     }
 
     public void deletePost(Long id) {
-        // TODO: check if user is allowed to delete post
         PostEntity existingPost = this.postDao.findById(id)
                 .orElseThrow(DataNotFoundException::new);
         this.postDao.delete(existingPost);

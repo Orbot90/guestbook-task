@@ -1,6 +1,7 @@
 package ru.orbot90.guestbook.entities;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
 /**
@@ -12,6 +13,7 @@ public class ImageEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @NotNull
     private String name;
     @Column(columnDefinition = "MEDIUMBLOB", name = "image")
     private byte[] image;
@@ -45,8 +47,8 @@ public class ImageEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ImageEntity that = (ImageEntity) o;
-        return id.equals(that.id) &&
-                name.equals(that.name);
+        return Objects.equals(id, that.id) &&
+                Objects.equals(name, that.name);
     }
 
     @Override

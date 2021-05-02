@@ -3,6 +3,7 @@ package ru.orbot90.guestbook.controller;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,10 +33,17 @@ public class ImageController {
         this.imageHost = imageHost;
     }
 
+    @PreAuthorize("isAuthenticated()")
     @PostMapping(produces = "application/json")
     @ResponseBody
     public ImageUploadResponse uploadImage(@RequestParam("upload") MultipartFile file) throws IOException {
-        String savedName = imageService.saveImage(file.getBytes());
+
+        // TODO: check if is authenticated, get user id from auth
+
+        // mocking userId before auth is implemented
+        Long userId = 42L;
+
+        String savedName = imageService.saveImage(file.getBytes(), userId);
 
         return new ImageUploadResponse(imageHost + IMAGE_CONTEXT + "/" + savedName);
     }
