@@ -10,12 +10,12 @@ import java.util.Objects;
  **/
 public class Post {
     private Long id;
-    private Long userId;
+    private String userName;
     @NotEmpty
     @Length(min = 1, max = 1000)
     private String data;
     private String date;
-    private Long editedBy;
+    private String editedBy;
     private String editedDate;
 
     public Long getId() {
@@ -26,12 +26,16 @@ public class Post {
         this.id = id;
     }
 
-    public Long getUserId() {
-        return userId;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public void setEditedBy(String editedBy) {
+        this.editedBy = editedBy;
     }
 
     public String getData() {
@@ -50,14 +54,6 @@ public class Post {
         this.date = date;
     }
 
-    public Long getEditedBy() {
-        return editedBy;
-    }
-
-    public void setEditedBy(Long editedBy) {
-        this.editedBy = editedBy;
-    }
-
     public String getEditedDate() {
         return editedDate;
     }
@@ -66,18 +62,22 @@ public class Post {
         this.editedDate = editedDate;
     }
 
+    public String getEditedBy() {
+        return editedBy;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Post post = (Post) o;
         return id.equals(post.id) &&
-                userId.equals(post.userId) &&
+                userName.equals(post.userName) &&
                 data.equals(post.data);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, userId, data);
+        return Objects.hash(id, userName, data);
     }
 }

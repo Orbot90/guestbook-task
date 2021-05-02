@@ -53,8 +53,9 @@ public class PostService {
         dto.setData(entity.getData());
         dto.setDate(DATE_FORMAT.format(entity.getDate()));
         dto.setId(entity.getId());
-        dto.setUserId(entity.getUserId());
-        dto.setEditedBy(entity.getEditedBy());
+        // TODO: map user ID to user name when User is implemented
+//        dto.setUserName(entity.getUserId());
+//        dto.setEditedBy(entity.getEditedBy());
 
         Optional.ofNullable(entity.getEditedDate())
                 .map(DATE_FORMAT::format)
