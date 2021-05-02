@@ -2,7 +2,7 @@ import { createContext, useContext } from 'react';
 import React from 'react'
 import {prepareContext} from './ContextConfiguration'
 
-const ApplicationContext = createContext(null);
+const ApplicationContext = createContext({});
 
 export const ApplicationProvider = (props) => {
     const value = prepareContext();

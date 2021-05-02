@@ -9,8 +9,8 @@ create table users
 (
     id        bigint auto_increment
         primary key,
-    user_name varchar(10) not null,
-    password  varchar(50) not null,
+    user_name varchar(20) not null,
+    password  varchar(200) not null,
     constraint users_username_uindex
         unique (user_name)
 );

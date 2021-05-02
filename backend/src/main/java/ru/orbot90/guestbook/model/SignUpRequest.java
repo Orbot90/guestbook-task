@@ -4,7 +4,6 @@ import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 
 /**
  * @author Iurii Plevako orbot90@gmail.com
@@ -14,7 +13,6 @@ public class SignUpRequest {
     private String userName;
     @NotNull
     @Length(min = 6)
-    @Pattern(regexp = "\"^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{6,}$\"")
     private String password;
 
     public String getUserName() {

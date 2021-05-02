@@ -1,5 +1,7 @@
 package ru.orbot90.guestbook.services;
 
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.orbot90.guestbook.dao.UserDao;
@@ -50,5 +52,36 @@ public class UserServiceImpl implements UserService {
                 .collect(Collectors.toList()));
 
         return newUser;
+    }
+
+
+
+    @EventListener({ContextRefreshedEvent.class})
+    @Transactional
+    public void addUsers() {
+        // TODO: remove when registration is implemented
+        this.userDao.findByUserName("Dio_Brando").orElseGet(() -> {
+            UserEntity userEntity = new UserEntity();
+            userEntity.setUserName("Dio_Brando");
+            userEntity.setPassword(passwordEncoder.encode("zawarudo"));
+            userEntity.setRoles(Collections.singletonList(new RoleEntity("ROLE_ADMIN")));
+            return userDao.save(userEntity);
+        });
+
+        this.userDao.findByUserName("Jotaro_Kujo").orElseGet(() -> {
+            UserEntity userEntity = new UserEntity();
+            userEntity.setUserName("Jotaro_Kujo");
+            userEntity.setPassword(passwordEncoder.encode("oraoraora"));
+            userEntity.setRoles(Collections.singletonList(new RoleEntity("ROLE_USER")));
+            return userDao.save(userEntity);
+        });
+
+        this.userDao.findByUserName("Joseph_Joestar").orElseGet(() -> {
+            UserEntity userEntity = new UserEntity();
+            userEntity.setUserName("Joseph_Joestar");
+            userEntity.setPassword(passwordEncoder.encode("ohmygod"));
+            userEntity.setRoles(Collections.singletonList(new RoleEntity("ROLE_USER")));
+            return userDao.save(userEntity);
+        });
     }
 }

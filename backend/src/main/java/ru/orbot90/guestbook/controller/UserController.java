@@ -1,5 +1,7 @@
 package ru.orbot90.guestbook.controller;
 
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import ru.orbot90.guestbook.model.SignUpRequest;

@@ -14,7 +14,12 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.CorsUtils;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import ru.orbot90.guestbook.model.User;
+import ru.orbot90.guestbook.services.TokenService;
 
 import java.io.PrintWriter;
 import java.util.List;
@@ -29,9 +34,12 @@ import java.util.stream.Collectors;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UserDetailsService userDetailsService;
+    private final TokenService tokenService;
 
-    public SecurityConfig(@Qualifier("guestbookUserDetails") UserDetailsService userDetailsService) {
+    public SecurityConfig(@Qualifier("guestbookUserDetails") UserDetailsService userDetailsService,
+                          TokenService tokenService) {
         this.userDetailsService = userDetailsService;
+        this.tokenService = tokenService;
     }
 
     @Override
@@ -46,15 +54,24 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
 
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", new CorsConfiguration().applyPermitDefaultValues());
+        return source;
+    }
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http
+        http.cors().and()
+                .csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/", "/home").permitAll()
-                .anyRequest().anonymous()
+                .anyRequest().permitAll()
                 .and()
                 .formLogin()
                 .loginPage("/login")
+                .permitAll()
                 .successHandler(this.successHandler())
                 .permitAll()
                 .and()
@@ -64,7 +81,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private AuthenticationSuccessHandler successHandler() {
         return (request, response, authentication) -> {
-            String userName = String.valueOf(authentication.getPrincipal());
+            String userName = String.valueOf(authentication.getName());
             List<String> roles = authentication.getAuthorities().stream()
                     .map(GrantedAuthority::getAuthority)
                     .collect(Collectors.toList());
@@ -72,6 +89,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             User user = new User();
             user.setName(userName);
             user.setRoles(roles);
+            user.setToken(this.tokenService.getToken(user));
 
             response.setContentType("application/json");
             try (PrintWriter writer = response.getWriter()) {
@@ -79,6 +97,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 objectMapper.writeValue(writer, user);
             }
 
+            System.out.println("blabla");
             // TODO: return JWT token if there's time to implement it, instead of just user data
         };
     }

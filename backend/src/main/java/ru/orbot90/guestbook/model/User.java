@@ -10,6 +10,7 @@ public class User {
     private String name;
     private String password;
     private List<String> roles;
+    private String token;
 
     public String getName() {
         return name;
@@ -33,6 +34,14 @@ public class User {
 
     public void setRoles(List<String> roles) {
         this.roles = roles;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 
     @Override

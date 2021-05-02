@@ -4,51 +4,69 @@ import Nav from 'react-bootstrap/Nav'
 import Dropdown from 'react-bootstrap/Dropdown'
 import ButtonGroup from 'react-bootstrap/ButtonGroup'
 import Button from 'react-bootstrap/Button'
-import React from 'react';
+import React, { useState } from 'react';
+import LoginForm from '../loginform/LoginForm'
+import { useApplicationContext } from '../ApplicationContext';
+import Modal from 'react-bootstrap/Modal'
 
-class Navigation extends React.Component {
+export default function Navigation() {
 
-  constructor(props) {
-    super(props)
-    this.state = {
-      isLoggedIn: true,
-      userName: "Vasya Pupkin"
+    const loginService = useApplicationContext().loginService;
+
+    const [isLoggedIn, setLoggedIn] = useState(false)
+    const [userName, setUserName] = useState(null)
+    const [loginFormDisplay, setLoginFormDisplay] = useState(false)
+
+    loginService.addSignInListener(user => {
+      setLoggedIn(true)
+      setUserName(user.name)
+      setLoginFormDisplay(false)
+    })
+    loginService.addSignOutListener(() => {
+      setLoggedIn(false)
+      setUserName(null)
+    })
+
+    const signOut = () => {
+      loginService.signOut();
     }
 
-    this.onSignIn = this.onSignIn(this)
-    this.signOut = this.signOut.bind(this)
-  }
-
-  
-  render() {
-    return <div>
+  return <div>
+              <Modal show={loginFormDisplay}>
+                <Modal.Header>
+                    <h5 className="modal-title">Sign in</h5>
+                    <Button variant="light" onClick={() => setLoginFormDisplay(false)}>Close</Button>
+                </Modal.Header>
+                <Modal.Body>
+                  <LoginForm />
+                </Modal.Body>
+              </Modal>
       <Navbar bg="light" variant="light" expand="lg">
         <Navbar.Brand href="#home">Guest Book</Navbar.Brand>
         <Nav
-          activeKey="/home"
-          onSelect={(selectedKey) => alert(`selected ${selectedKey}`)} className="mr-auto" >
+          activeKey="/home" className="mr-auto" >
           <Nav.Item>
             <Nav.Link href="/home">Home</Nav.Link>
           </Nav.Item>
           <Nav.Item>
-          { this.state.isLoggedIn ?
+          { isLoggedIn ?
             <div />
-            : <Nav.Link onClick={this.signIn}>Sign in</Nav.Link>
+            : <Nav.Link onClick={ () => setLoginFormDisplay(true) }>Sign in</Nav.Link>
           }
           </Nav.Item>
         </Nav>
-        { this.state.isLoggedIn ? 
+        { isLoggedIn ? 
             <Dropdown as={ButtonGroup}>
 
             <Dropdown.Toggle variant="outline-dark" id="dropdown-user">
-              {this.state.userName}
+              {userName}
             </Dropdown.Toggle>
 
             <Dropdown.Menu>
               <Dropdown.Item>Profile</Dropdown.Item>
             </Dropdown.Menu>
             <Dropdown.Menu>
-              <Dropdown.Item onSelect={this.signOut}>Sign out</Dropdown.Item>
+              <Dropdown.Item onSelect={signOut}>Sign out</Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown> :
             <Button variant="light" disabled={true} >Anonymous</Button>
@@ -56,20 +74,4 @@ class Navigation extends React.Component {
         
       </Navbar>
     </div>
-  }
-
-  signOut() {
-    this.setState({
-      isLoggedIn: false
-    })
-  }
-
-  onSignIn() {
-    this.setState({
-      isLoggedIn: true,
-      userName: "Vasya Pupkin"
-    })
-  }
 }
-
-export default Navigation;

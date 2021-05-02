@@ -1,5 +1,5 @@
 import './PostEditor.css'
-import React from 'react';
+import React, { useState } from 'react';
 import Editor from '@ckeditor/ckeditor5-build-inline/build/ckeditor';
 import {CKEditor} from '@ckeditor/ckeditor5-react'
 import Container from 'react-bootstrap/Container'
@@ -11,74 +11,62 @@ import ButtonGroup from 'react-bootstrap/ButtonGroup'
 import Card from 'react-bootstrap/Card'
 import FormGroup from 'react-bootstrap/FormGroup'
 import ButtonToolbar from 'react-bootstrap/ButtonToolbar'
+import { useApplicationContext } from '../ApplicationContext'
 
-class PostEditor extends React.Component {
+export default function PostEditor() {
 
-    constructor(props) {
-        super(props);
-        this.imageUploadUrl = getApplicationProperty('imageUploadUrl')
-        this.submit = this.submit.bind(this)
-        this.ckeditor = this.ckeditor.bind(this)
+    
+    const postService = useApplicationContext().postService
+    const loginService = useApplicationContext().loginService
 
-        this.charactersLimit = 400
+    const [editorInstance, setEditorInstance] = useState(null)
 
-        this.state = {
-            submitDisabled: true,
-            charactersCount: 0,
-            charactersLimitExceeded: false
-        }
+    const imageUploadUrl = getApplicationProperty('imageUploadUrl')
+    const charactersLimit = 400
+    const [isLoggedIn, setLoggedIn] = useState(false)
+    const [submitDisabled, setSubmitDisabled] = useState(true)
+    const [charactersCount, setCharactersCount] = useState(0)
+    const [charactersLimitExceeded, setCharactersLimitExceeded] = useState(false)
+
+    loginService.addSignInListener(() => {
+        setLoggedIn(true)
+    })
+
+    loginService.addSignOutListener(() => {
+        setLoggedIn(false)
+    })
+
+    const submit = () => {
+        postService.submitPost(editorInstance, loginService.userName)
     }
-
-    submit() {
-        const data = this.editor.getData()
-        const requestOptions = {
-            mode: 'cors',
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ data: data })
-        };
-        this.editor.disabled = true;
-        fetch(getApplicationProperty('applicationHost') + '/post', requestOptions)
-            .then(response => {
-                if (!response || response.error){
-                alert("Could not send post");
-            } else {
-                this.editor.setData("")
-                // update all posts when the posts display implemented
-            }
-            this.editor.disabled = false;
-        })
-    }
-
-    ckeditor() {
+    const ckeditor = () => {
         return <div className="border border-light bg-white rounded"><CKEditor
                     editor={ Editor }
                     config={ {
                             placeholder: "Type your text here",
                             simpleUpload: {
-                                uploadUrl: getApplicationProperty('imageUploadUrl')
+                                uploadUrl: imageUploadUrl
+                            },
+                            wordCount: {
+                                onUpdate: stats => {
+                                    const length = stats.characters
+                                    const isLimitExceeded = length > charactersLimit;
+
+                                    setCharactersCount(length)
+                                    setSubmitDisabled(isLimitExceeded || length == 0)
+                                    setCharactersLimitExceeded(isLimitExceeded)
+                                }
                             }
                         }
                     }
                     onReady={ (editor) => {
-                        this.editor = editor
+                        setEditorInstance(editor)
                     }
                     }
-                    onChange= { (event, editor) => {
-                        const length = editor.getData().length;
-                        const isLimitExceeded = length > this.charactersLimit;
-
-                        this.setState({
-                            charactersCount: length,
-                            submitDisabled: (isLimitExceeded || length == 0),
-                            charactersLimitExceeded: isLimitExceeded
-                        })
-
-                    }}
                 /></div>
     }
 
-    renderEditor() {
+    const renderEditor = () => {
 
         return (
             <Card className="bg-light rounded">
@@ -91,37 +79,33 @@ class PostEditor extends React.Component {
                     </div>
 
                 <FormGroup>
-                    {this.ckeditor()}
+                    {ckeditor()}
                 </FormGroup>
                 <ButtonToolbar className="justify-content-between">
                     <ButtonGroup>
-                        <Button className="m-2" onClick={this.submit} varian="primary" 
-                        block disabled={this.state.submitDisabled}>Share</Button>
+                        <Button className="m-2" onClick={submit} variant="primary" 
+                        block disabled={submitDisabled}>Share</Button>
                     </ButtonGroup>
                     {
-                        this.state.charactersLimitExceeded ?
-                        <span className="mr-5 warningtext">{this.state.charactersCount}\{this.charactersLimit}</span> :
-                    <span className="mr-5 words-counter">{this.state.charactersCount}\{this.charactersLimit}</span>
+                        charactersLimitExceeded ?
+                        <span className="mr-5 warningtext">{charactersCount}\{charactersLimit}</span> :
+                    <span className="mr-5 words-counter">{charactersCount}\{charactersLimit}</span>
                     }
                 </ButtonToolbar>
             </Card>
             )
     }
 
-    render() {
-        return (
-            <Container className="mt-5 md-5">
-                <Row>
-                    <Col />
-                    <Col xs={7}>
-                    <div>
-                        {this.renderEditor()}
-                    </div>
-                    </Col>
-                    <Col />
-                </Row>
-            </Container>);
-    }
+    return isLoggedIn ? (
+        <Container className="mt-5 md-5">
+            <Row>
+                <Col />
+                <Col xs={7}>
+                <div>
+                    {renderEditor()}
+                </div>
+                </Col>
+                <Col />
+            </Row>
+        </Container>) : <div />;
 }
-
-export default PostEditor;
