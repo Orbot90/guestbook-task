@@ -28,7 +28,7 @@ import java.util.stream.Stream;
 public class PostService {
 
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter
-            .ofLocalizedDateTime(FormatStyle.LONG);
+            .ofLocalizedDateTime(FormatStyle.MEDIUM);
 
     private final PostDao postDao;
     private final UserDao userDao;
@@ -55,7 +55,7 @@ public class PostService {
         if (approval == PostApproval.APPROVED) {
             postsStream = postsStream.filter(PostEntity::isApproved);
         }
-                return postsStream.sorted(Comparator.comparing(PostEntity::getDate))
+                return postsStream.sorted(Comparator.comparing(PostEntity::getDate).reversed())
                 .map(post -> converToDTO(post, timeZone))
                 .collect(Collectors.toList());
     }

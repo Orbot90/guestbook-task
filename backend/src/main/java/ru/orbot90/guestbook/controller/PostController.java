@@ -39,7 +39,7 @@ public class PostController {
 
     @GetMapping
     @ResponseBody
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+//    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public List<Post> getAllPosts(TimeZone timeZone) {
         return this.postService.getAllPosts(timeZone, PostApproval.ALL);
     }

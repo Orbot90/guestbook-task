@@ -16,7 +16,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.CorsUtils;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import ru.orbot90.guestbook.model.User;
 import ru.orbot90.guestbook.services.TokenService;
@@ -96,8 +95,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 ObjectMapper objectMapper = new ObjectMapper();
                 objectMapper.writeValue(writer, user);
             }
-
-            System.out.println("blabla");
             // TODO: return JWT token if there's time to implement it, instead of just user data
         };
     }

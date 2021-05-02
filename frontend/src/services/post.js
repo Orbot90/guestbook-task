@@ -22,6 +22,17 @@ class PostService {
             editor.disabled = false;
         })
     }
+
+    async getPosts(onLoad) {
+        const requestOptions = {
+                mode: 'cors',
+                method: 'GET' 
+            };
+
+        const response = await fetch(getApplicationProperty('applicationHost') + '/post', requestOptions)
+        const json = await response.json()
+        return json
+    }
 }
 
 export default PostService;

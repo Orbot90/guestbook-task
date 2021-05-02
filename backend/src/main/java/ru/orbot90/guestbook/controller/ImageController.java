@@ -33,7 +33,7 @@ public class ImageController {
         this.imageHost = imageHost;
     }
 
-    @PreAuthorize("isAuthenticated()")
+//    @PreAuthorize("isAuthenticated()")
     @PostMapping(produces = "application/json")
     @ResponseBody
     public ImageUploadResponse uploadImage(@RequestParam("upload") MultipartFile file) throws IOException {

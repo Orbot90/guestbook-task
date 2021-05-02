@@ -3,23 +3,47 @@ import Card from 'react-bootstrap/Card'
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
+import sanitizeHtml from 'sanitize-html';
 
 class Post extends React.Component {
 
     constructor(props) {
         super(props);
+        const post = props.data
 
-        this.data = props.data;
-        this.date = props.date;
-        this.username = props.username;
+        this.data = post.data;
+        this.date = post.date;
+        this.username = post.userName;
         this.editedBy = props.editedBy;
         this.editedDate = props.editedDate;
-        this.approved = props.approved;
+        // this.approved = props.approved;
     }
 
     render() {
-        return (
 
+          
+          const sanitize = (dirty, options) => ({
+            __html: sanitizeHtml(
+              dirty, 
+              options
+            )
+          });
+
+          const sanitizeOptions = {
+            allowedTags: ['figure', 'img', 'strong', 'i', 'span', 'p'],
+            allowedAttributes: {
+                '*' : ['class'],
+                'span': ['style'],
+                'img': ['src']
+            },
+            disallowedTagsMode: 'escape'
+          }
+          
+          const SanitizeHTML = ({ html, options }) => (
+            <div dangerouslySetInnerHTML={sanitize(html, options)} />
+          );
+
+        return (
             <Container className="md-5">
                 <Row>
                     <Col />
@@ -30,7 +54,7 @@ class Post extends React.Component {
                                     <div class="d-flex justify-content-between align-items-center">
                                         <div class="d-flex justify-content-between align-items-center">
                                             <div class="ml-2">
-                                                <div class="h5 m-0">JotaroKujo</div>
+                                                <div class="h5 m-0">{this.username}</div>
                                             </div>
                                         </div>
                                         <div>
@@ -50,12 +74,11 @@ class Post extends React.Component {
 
                                 </div>
                                 <div class="card-body">
-                                    <div class="text-muted h7 mb-2"> <i class="fa fa-clock-o"></i>May, 01, 2021</div>
+                                    <div class="text-muted h7 mb-2"> <i class="fa fa-clock-o"></i>{this.date}</div>
 
-                                    <p class="card-text">
-                                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo recusandae nulla rem eos ipsa praesentium esse magnam nemo dolor
-                                        sequi fuga quia quaerat cum, obcaecati hic, molestias minima iste voluptates.
-                                    </p>
+                                    <div class="card-text">
+                                        <SanitizeHTML html={this.data} options={sanitizeOptions} />
+                                    </div>
                                 </div>
                             </Card>
                         </div>

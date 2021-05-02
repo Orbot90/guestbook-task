@@ -53,7 +53,6 @@ export default function PostEditor() {
                                     const isLimitExceeded = length > charactersLimit;
 
                                     setCharactersCount(length)
-                                    setSubmitDisabled(isLimitExceeded || length == 0)
                                     setCharactersLimitExceeded(isLimitExceeded)
                                 }
                             }
@@ -63,6 +62,10 @@ export default function PostEditor() {
                         setEditorInstance(editor)
                     }
                     }
+                    onChange= { (event, editor) => {
+                        const length = editor.getData().length;
+                        setSubmitDisabled(length <= 0)
+                    }}
                 /></div>
     }
 
