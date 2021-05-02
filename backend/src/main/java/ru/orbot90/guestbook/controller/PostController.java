@@ -56,4 +56,7 @@ public class PostController {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
     }
+
+    // TODO: add approve post for administrator
+    // TODO: add get method to get only approved posts (for regular users)
 }

@@ -110,7 +110,7 @@ class PostEditor extends React.Component {
 
     render() {
         return (
-            <Container className="mt-5">
+            <Container className="mt-5 md-5">
                 <Row>
                     <Col />
                     <Col xs={7}>
