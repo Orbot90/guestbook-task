@@ -31,7 +31,23 @@ class PostEditor extends React.Component {
 
     submit() {
         const data = this.editor.getData()
-        console.log(data)
+        const requestOptions = {
+            mode: 'cors',
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ data: data })
+        };
+        this.editor.disabled = true;
+        fetch(getApplicationProperty('applicationHost') + '/post', requestOptions)
+            .then(response => {
+                if (!response || response.error){
+                alert("Could not send post");
+            } else {
+                this.editor.setData("")
+                // update all posts when the posts display implemented
+            }
+            this.editor.disabled = false;
+        })
     }
 
     ckeditor() {

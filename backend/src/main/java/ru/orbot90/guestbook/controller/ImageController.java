@@ -10,6 +10,7 @@ import ru.orbot90.guestbook.exception.ImageNotFoundException;
 import ru.orbot90.guestbook.model.ImageUploadResponse;
 import ru.orbot90.guestbook.services.ImageService;
 
+import javax.validation.constraints.NotEmpty;
 import java.io.IOException;
 
 /**
@@ -42,7 +43,7 @@ public class ImageController {
     @GetMapping
     @RequestMapping(path = {"/{name}"}, produces = "image/webp")
     @ResponseBody
-    public ResponseEntity<byte[]> getImage(@PathVariable("name") String name) {
+    public ResponseEntity<byte[]> getImage(@PathVariable("name") @NotEmpty String name) {
         try {
             byte[] image = this.imageService.getImageByName(name);
             return new ResponseEntity<>(image, HttpStatus.OK);

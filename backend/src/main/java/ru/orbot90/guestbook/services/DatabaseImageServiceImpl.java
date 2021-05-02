@@ -32,11 +32,16 @@ public class DatabaseImageServiceImpl implements ImageService {
             String hash = hashService.calculateHash(image);
 
             String imageName = userId + "_" + hash;
-            ImageEntity imageEntity = new ImageEntity();
-            imageEntity.setImage(image);
-            imageEntity.setName(imageName);
 
-            imageDao.save(imageEntity);
+            ImageEntity existingImage = this.imageDao.findByName(imageName).orElse(null);
+
+            if (existingImage == null) {
+                ImageEntity imageEntity = new ImageEntity();
+                imageEntity.setImage(image);
+                imageEntity.setName(imageName);
+
+                imageDao.save(imageEntity);
+            }
             return imageName;
         } catch (Exception e) {
             throw new GuestBookException("Error while saving image", e);
