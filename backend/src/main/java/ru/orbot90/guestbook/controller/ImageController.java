@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import ru.orbot90.guestbook.exception.ImageNotFoundException;
+import ru.orbot90.guestbook.exception.DataNotFoundException;
 import ru.orbot90.guestbook.model.ImageUploadResponse;
 import ru.orbot90.guestbook.services.ImageService;
 
@@ -47,7 +47,7 @@ public class ImageController {
         try {
             byte[] image = this.imageService.getImageByName(name);
             return new ResponseEntity<>(image, HttpStatus.OK);
-        } catch (ImageNotFoundException e) {
+        } catch (DataNotFoundException e) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
     }

@@ -8,9 +8,11 @@ create table images
 
 create table posts
 (
-    id      bigint auto_increment
-            primary key,
-    user_id bigint        null,
-    data    varchar(1000) not null
+    id          bigint auto_increment
+        primary key,
+    user_id     bigint        not null,
+    data        varchar(1000) not null,
+    date        datetime      null,
+    edited_by   bigint        null,
+    edited_date datetime      null
 );
-

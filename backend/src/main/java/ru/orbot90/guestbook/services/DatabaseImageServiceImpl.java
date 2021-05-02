@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 import ru.orbot90.guestbook.dao.ImageDao;
 import ru.orbot90.guestbook.entities.ImageEntity;
 import ru.orbot90.guestbook.exception.GuestBookException;
-import ru.orbot90.guestbook.exception.ImageNotFoundException;
+import ru.orbot90.guestbook.exception.DataNotFoundException;
 
 /**
  * ImageService implementation that stores the images to a database
@@ -25,6 +25,7 @@ public class DatabaseImageServiceImpl implements ImageService {
     @Override
     public String saveImage(byte[] image) {
         try {
+            // TODO: check if is authenticated, get user id from auth
 
             // mocking userId before auth is implemented
             Long userId = 42L;
@@ -51,6 +52,6 @@ public class DatabaseImageServiceImpl implements ImageService {
     @Override
     public byte[] getImageByName(String name) {
         return this.imageDao.findByName(name).map(ImageEntity::getImage)
-                .orElseThrow(ImageNotFoundException::new);
+                .orElseThrow(DataNotFoundException::new);
     }
 }

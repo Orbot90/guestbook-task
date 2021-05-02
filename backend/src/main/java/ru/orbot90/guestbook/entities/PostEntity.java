@@ -1,6 +1,7 @@
 package ru.orbot90.guestbook.entities;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
@@ -14,6 +15,9 @@ public class PostEntity {
     private Long id;
     private Long userId;
     private String data;
+    private LocalDateTime date;
+    private Long editedBy;
+    private LocalDateTime editedDate;
 
     public Long getId() {
         return id;
@@ -37,6 +41,30 @@ public class PostEntity {
 
     public void setData(String data) {
         this.data = data;
+    }
+
+    public LocalDateTime getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDateTime date) {
+        this.date = date;
+    }
+
+    public Long getEditedBy() {
+        return editedBy;
+    }
+
+    public void setEditedBy(Long editedBy) {
+        this.editedBy = editedBy;
+    }
+
+    public LocalDateTime getEditedDate() {
+        return editedDate;
+    }
+
+    public void setEditedDate(LocalDateTime editedDate) {
+        this.editedDate = editedDate;
     }
 
     @Override

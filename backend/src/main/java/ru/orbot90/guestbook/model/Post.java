@@ -14,6 +14,9 @@ public class Post {
     @NotEmpty
     @Length(min = 1, max = 1000)
     private String data;
+    private String date;
+    private Long editedBy;
+    private String editedDate;
 
     public Long getId() {
         return id;
@@ -37,6 +40,30 @@ public class Post {
 
     public void setData(String data) {
         this.data = data;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public Long getEditedBy() {
+        return editedBy;
+    }
+
+    public void setEditedBy(Long editedBy) {
+        this.editedBy = editedBy;
+    }
+
+    public String getEditedDate() {
+        return editedDate;
+    }
+
+    public void setEditedDate(String editedDate) {
+        this.editedDate = editedDate;
     }
 
     @Override
