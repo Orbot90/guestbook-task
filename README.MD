@@ -1,8 +1,12 @@
-Guestbook application.
+# Guestbook application.
+
+## Demo
 
 The demonstration is hosted in a Compute Engine in GCP:
 
 http://35.233.110.226/
+
+## Tech Summary
 
 Frontend is implemented in ReactJS with Bootstrap.
 
@@ -15,23 +19,27 @@ The backend is implemented using Spring Boot. The migration for the database is 
 
 Application uses JWT tokens to authenticate at the server.
 
+Repository also contains docker files for both frontend and backend and docker-compose.yml file to start both along with the MySQL database.
+
+## Users
 Registration is not implemented, so currently there are some predefined users stored in the database.
 
-Admin:
+#### Admin:
 username: Dio_Brando
+
 password: zawarudo
 
-User:
-username: Jotaro_Kujo
-password: oraoraora
+#### User:
+**username**: Jotaro_Kujo
 
-User:
-username: Joseph_Joestar
-password: ohmygod
+**password**: oraoraora
+
+#### User:
+**username**: Joseph_Joestar
+
+**password**: ohmygod
 
 The new entries are created as pending approval - they are visible for the author and the admin before admin approves them.
 Approved messages are visible for everyone.
 
 Anonymous users can see approved messages but can't add new entries.
-
-Repository also contains docker files for both frontend and backend and docker-compose.yml file to start both along with the MySQL database.
