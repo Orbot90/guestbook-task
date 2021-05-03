@@ -8,7 +8,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.orbot90.guestbook.dao.ImageDao;
+import ru.orbot90.guestbook.dao.UserDao;
 import ru.orbot90.guestbook.entities.ImageEntity;
+import ru.orbot90.guestbook.entities.UserEntity;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
@@ -28,6 +30,8 @@ class DatabaseImageServiceImplTest {
     private ImageDao imageDao;
     @Mock
     private HashService hashService;
+    @Mock
+    private UserDao userDao;
     @InjectMocks
     private DatabaseImageServiceImpl service;
 
@@ -36,12 +40,15 @@ class DatabaseImageServiceImplTest {
 
         byte[] mockBytes = "testcontent".getBytes();
         when(hashService.calculateHash(aryEq(mockBytes))).thenReturn("mockhash");
+        UserEntity user = new UserEntity();
+        user.setId(123L);
+        when(userDao.findByUserName(eq("user"))).thenReturn(Optional.of(user));
 
         ImageEntity expectedEntity = new ImageEntity();
 
         expectedEntity.setName("123_mockhash");
         expectedEntity.setImage(mockBytes);
-        service.saveImage(mockBytes, 123L);
+        service.saveImage(mockBytes, "user");
         verify(imageDao).save(eq(expectedEntity));
     }
 
@@ -50,13 +57,16 @@ class DatabaseImageServiceImplTest {
 
         byte[] mockBytes = "testcontent".getBytes();
         when(hashService.calculateHash(aryEq(mockBytes))).thenReturn("mockhash");
+        UserEntity user = new UserEntity();
+        user.setId(123L);
+        when(userDao.findByUserName(eq("user"))).thenReturn(Optional.of(user));
         when(imageDao.findByName(eq("123_mockhash"))).thenReturn(Optional.of(new ImageEntity()));
 
         ImageEntity expectedEntity = new ImageEntity();
 
         expectedEntity.setName("123_mockhash");
         expectedEntity.setImage(mockBytes);
-        service.saveImage(mockBytes, 123L);
+        service.saveImage(mockBytes, "user");
         verifyNoMoreInteractions(imageDao);
     }
 

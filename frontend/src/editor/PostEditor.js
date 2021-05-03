@@ -13,9 +13,19 @@ import FormGroup from 'react-bootstrap/FormGroup'
 import ButtonToolbar from 'react-bootstrap/ButtonToolbar'
 import { useApplicationContext } from '../ApplicationContext'
 
-export default function PostEditor() {
+export default function PostEditor(props) {
 
-    
+    let postId = null
+    let editorData = ""
+    let mode = "new"
+    let post = null
+    if (props.post) {
+        post = props.post
+        mode = props.mode
+        postId = post.id
+        editorData = post.data
+
+    }
     const postService = useApplicationContext().postService
     const loginService = useApplicationContext().loginService
 
@@ -23,8 +33,9 @@ export default function PostEditor() {
 
     const imageUploadUrl = getApplicationProperty('imageUploadUrl')
     const charactersLimit = 400
-    const [isLoggedIn, setLoggedIn] = useState(false)
-    const [submitDisabled, setSubmitDisabled] = useState(true)
+    const [isLoggedIn, setLoggedIn] = useState(loginService.userName != null)
+    const [submitDisabled, setSubmitDisabled] = useState(editorData && editorData.length > 0 && 
+        editorData.length < charactersLimit)
     const [charactersCount, setCharactersCount] = useState(0)
     const [charactersLimitExceeded, setCharactersLimitExceeded] = useState(false)
 
@@ -37,7 +48,13 @@ export default function PostEditor() {
     })
 
     const submit = () => {
-        postService.submitPost(editorInstance, loginService.userName, loginService.token)
+        if (mode == "new") {
+            postService.submitPost(editorInstance, loginService.userName, loginService.token)
+        } else if (mode == "edit") {
+            postService.editPost(editorInstance, post, loginService.token, () => {
+                props.onFinishEditing()
+            })
+        }
     }
     const ckeditor = () => {
         return <div className="border border-light bg-white rounded"><CKEditor
@@ -45,7 +62,11 @@ export default function PostEditor() {
                     config={ {
                             placeholder: "Type your text here",
                             simpleUpload: {
-                                uploadUrl: imageUploadUrl
+                                uploadUrl: imageUploadUrl,
+                                headers: {
+                                    Authorization: loginService.token
+                                }
+
                             },
                             wordCount: {
                                 onUpdate: stats => {
@@ -58,6 +79,7 @@ export default function PostEditor() {
                             }
                         }
                     }
+                    data = {editorData}
                     onReady={ (editor) => {
                         setEditorInstance(editor)
                     }
@@ -88,6 +110,11 @@ export default function PostEditor() {
                     <ButtonGroup>
                         <Button className="m-2" onClick={submit} variant="primary" 
                         block disabled={submitDisabled}>Share</Button>
+                        {
+                            mode == 'edit' ? 
+                            <Button variant="light" onClick={() => props.onFinishEditing()}>Close</Button> :
+                            <div />
+                        }
                     </ButtonGroup>
                     {
                         charactersLimitExceeded ?

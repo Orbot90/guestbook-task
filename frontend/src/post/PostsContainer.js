@@ -6,12 +6,19 @@ export default function PostsContainer() {
 
 
     const postService = useApplicationContext().postService
-    postService.addPostSubmitListener("postsContainer", () => {
-        console.log("Inside listener")
-        postService.getPosts()
+    const loginService = useApplicationContext().loginService
+
+    const reloadPosts = (token, user) => {
+        postService.getPosts(token)
             .then((posts) => setPosts(posts))
-    })
-    const postsPromise = postService.getPosts()
+    }
+
+    loginService.addSignInListener(reloadPosts)
+    loginService.addSignOutListener(reloadPosts)
+
+    postService.addPostSubmitListener("postsContainer", reloadPosts)
+    postService.addDeletePostListener("postsContainer", reloadPosts)
+    const postsPromise = postService.getPosts(loginService.token)
 
     const [posts, setPosts] = useState(null)
     const [isRequested, setRequested] = useState(false)

@@ -19,11 +19,11 @@ class LoginService {
 
     getCurrentUser(doAfter) {
         const requestOptions = {
-            mode: 'cors',
-            method: 'GET'
+            method: 'GET',
+            credentials: 'include'
         };
 
-    const response = fetch(getApplicationProperty('applicationHost') + '/user', requestOptions)
+    fetch(getApplicationProperty('applicationHost') + '/user', requestOptions)
         .then(response => {
             if (response.status == 200) {
                 return response.json()
@@ -67,6 +67,7 @@ class LoginService {
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
           },
+          credentials: 'include',
           body: formBody
         }).then(response => {
             if (response.status == 200) {
@@ -79,7 +80,7 @@ class LoginService {
                         name: this.userName
                     }
                     this.signInListeners.forEach(listener => {
-                        listener(user)
+                        listener(result.token, user)
                     });
                 })
             } else {

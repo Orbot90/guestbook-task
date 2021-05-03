@@ -76,15 +76,19 @@ public class PostService {
         return dto;
     }
 
-    public Post updatePost(Long id, Post post, TimeZone timeZone) {
+    public Post updatePost(Long id, Post post, TimeZone timeZone, String editorName) {
         PostEntity existingPost = this.postDao.findById(id)
                 .orElseThrow(DataNotFoundException::new);
-        existingPost.setData(post.getData());
-        UserEntity editor = userDao.findByUserName(post.getEditedBy())
-                .orElseThrow(() -> new DataNotFoundException("User " +
-                        post.getEditedBy() + " doesn't exist"));
-        existingPost.setEditedBy(editor);
-        existingPost.setEditedDate(LocalDateTime.now());
+        existingPost.setApproved(post.getApproved());
+
+        if (!post.getData().equals(existingPost.getData())) {
+            existingPost.setData(post.getData());
+            UserEntity editor = userDao.findByUserName(editorName)
+                    .orElseThrow(() -> new DataNotFoundException("User " +
+                            post.getEditedBy() + " doesn't exist"));
+            existingPost.setEditedBy(editor);
+            existingPost.setEditedDate(LocalDateTime.now());
+        }
         this.postDao.save(existingPost);
         return this.converToDTO(existingPost, timeZone);
     }

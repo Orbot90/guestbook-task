@@ -1,5 +1,6 @@
 package ru.orbot90.guestbook.controller;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Controller;
@@ -38,6 +39,7 @@ public class UserController {
 
     @GetMapping
     @ResponseBody
+    @PreAuthorize("isAuthenticated()")
     public User currentUser(Authentication authentication) {
         if (authentication == null) {
             return null;

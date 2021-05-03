@@ -17,7 +17,7 @@ export default function Navigation() {
     const [userName, setUserName] = useState(loginService.name)
     const [loginFormDisplay, setLoginFormDisplay] = useState(false)
 
-    loginService.addSignInListener(user => {
+    loginService.addSignInListener((token, user) => {
       setLoggedIn(true)
       setUserName(user.name)
       setLoginFormDisplay(false)

@@ -29,7 +29,7 @@ import static org.mockito.Mockito.when;
 class PostServiceTest {
 
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter
-            .ofLocalizedDateTime(FormatStyle.LONG);
+            .ofLocalizedDateTime(FormatStyle.MEDIUM);
 
     @Mock
     private PostDao postDao;

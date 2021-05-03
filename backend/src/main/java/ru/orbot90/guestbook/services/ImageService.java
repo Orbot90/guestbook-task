@@ -11,10 +11,10 @@ public interface ImageService {
      * Save image using the implemented mechanism
      *
      * @param image - the image to be saved
-     * @param userId for forming namee in storage
+     * @param userName name of the user uploading the image
      * @return path to access the image as a string
      */
-    String saveImage(byte[] image, Long userId);
+    String saveImage(byte[] image, String userName);
 
     /**
      * Get image from storage by its name

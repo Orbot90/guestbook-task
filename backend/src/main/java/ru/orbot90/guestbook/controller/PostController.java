@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import ru.orbot90.guestbook.exception.DataNotFoundException;
@@ -11,16 +12,18 @@ import ru.orbot90.guestbook.model.Post;
 import ru.orbot90.guestbook.model.PostApproval;
 import ru.orbot90.guestbook.services.PostService;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Set;
 import java.util.TimeZone;
+import java.util.stream.Collectors;
 
 /**
  * @author Iurii Plevako orbot90@gmail.com
  **/
 @Controller
 @RequestMapping("/post")
-@CrossOrigin
 public class PostController {
 
     private final PostService postService;
@@ -41,24 +44,33 @@ public class PostController {
 
     @GetMapping
     @ResponseBody
-//    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public List<Post> getAllPosts(TimeZone timeZone) {
-        return this.postService.getAllPosts(timeZone, PostApproval.ALL);
-    }
+    public List<Post> getAllPosts(TimeZone timeZone, Authentication authentication) {
 
-    @GetMapping("/approved")
-    @ResponseBody
-    public List<Post> getAllApprovedPosts(TimeZone timeZone) {
-        return this.postService.getAllPosts(timeZone, PostApproval.APPROVED);
+        PostApproval approvalType;
+        if (authentication == null) {
+            approvalType = PostApproval.APPROVED;
+        } else {
+            Set<String> authoritiesSet = authentication.getAuthorities().stream()
+                    .map(GrantedAuthority::getAuthority)
+                    .collect(Collectors.toSet());
+            if (authoritiesSet.contains("ROLE_ADMIN")) {
+                approvalType = PostApproval.ALL;
+            } else {
+                approvalType = PostApproval.APPROVED;
+            }
+        }
+        return this.postService.getAllPosts(timeZone, approvalType);
+
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Post> editPost(@RequestBody Post post, @PathVariable("id") Long id,
-                                         TimeZone timeZone) {
+                                         TimeZone timeZone, Authentication authentication) {
         // TODO custom permission evaluator - is admin or is author of this post
         try {
-            return new ResponseEntity<>(this.postService.updatePost(id, post, timeZone), HttpStatus.OK);
+            String editor = authentication.getName();
+            return new ResponseEntity<>(this.postService.updatePost(id, post, timeZone, editor), HttpStatus.OK);
         } catch (DataNotFoundException e) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
@@ -75,6 +87,4 @@ public class PostController {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
     }
-
-    // TODO: add approve post for administrator
 }
