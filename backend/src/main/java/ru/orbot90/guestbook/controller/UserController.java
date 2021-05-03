@@ -37,24 +37,4 @@ public class UserController {
         return userService.createUser(request);
     }
 
-    @GetMapping
-    @ResponseBody
-    @PreAuthorize("isAuthenticated()")
-    public User currentUser(Authentication authentication) {
-        if (authentication == null) {
-            return null;
-        }
-        User user = new User();
-
-        user.setName(authentication.getName());
-        List<String> roles = authentication.getAuthorities()
-                .stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toList());
-        user.setRoles(roles);
-        user.setToken(this.tokenService.getToken(user));
-
-        return user;
-    }
-
 }

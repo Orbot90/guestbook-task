@@ -7,6 +7,9 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.stereotype.Service;
 import ru.orbot90.guestbook.model.User;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,7 +34,10 @@ public class TokenServiceImpl implements TokenService {
                                 .map(GrantedAuthority::getAuthority)
                                 .collect(Collectors.toList()))
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 600000))
+                .setExpiration(Date.from(LocalDateTime.now()
+                        .plusYears(1L)
+                        .atZone(ZoneId.systemDefault())
+                        .toInstant()))
                 .signWith(SignatureAlgorithm.HS512,
                         secretKey.getBytes()).compact();
 

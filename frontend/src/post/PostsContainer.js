@@ -9,29 +9,29 @@ export default function PostsContainer() {
     const loginService = useApplicationContext().loginService
 
     const reloadPosts = (token, user) => {
-        postService.getPosts(token)
-            .then((posts) => setPosts(posts))
+        const postsPromise = postService.getPosts(loginService.token)
+        postsPromise.then(posts => setPosts(posts))
     }
 
-    loginService.addSignInListener(reloadPosts)
-    loginService.addSignOutListener(reloadPosts)
+    loginService.addSignInListener("postsContainer", reloadPosts)
+    loginService.addSignOutListener("postsContainer", reloadPosts)
 
     postService.addPostSubmitListener("postsContainer", reloadPosts)
     postService.addDeletePostListener("postsContainer", reloadPosts)
-    const postsPromise = postService.getPosts(loginService.token)
 
     const [posts, setPosts] = useState(null)
     const [isRequested, setRequested] = useState(false)
 
     useEffect(() => {
         if (!isRequested) {
+            const postsPromise = postService.getPosts(loginService.token)
             postsPromise.then(posts => setPosts(posts))
             setRequested(true)
         }
       }, []);
 
-    const postsElements = posts ? posts.map((element, id) => {
-        return <div key={id}><Post data={element} /></div>;
+    const postsElements = posts ? posts.map((post, id) => {
+        return <div key={post.date + "_" + post.userName}><Post data={post} /></div>;
     }) : [<div />]
     console.log("Rendering")
     return <div>

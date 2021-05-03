@@ -48,10 +48,14 @@ public class PostService {
         return this.converToDTO(postEntity, timeZone);
     }
 
-    public List<Post> getAllPosts(TimeZone timeZone, PostApproval approval) {
+    public List<Post> getAllPosts(TimeZone timeZone, PostApproval approval, String userName) {
         Stream<PostEntity> postsStream = this.postDao.findAll().stream();
         if (approval == PostApproval.APPROVED) {
-            postsStream = postsStream.filter(PostEntity::isApproved);
+            postsStream = postsStream.filter(post -> {
+                boolean userNameEquals = userName != null &&
+                        userName.equals(post.getUser().getUserName());
+                return post.isApproved() || userNameEquals;
+            });
         }
                 return postsStream.sorted(Comparator.comparing(PostEntity::getDate))
                 .map(post -> converToDTO(post, timeZone))

@@ -2,48 +2,27 @@ import {getApplicationProperty} from '../properties/applicationProperties'
 
 class LoginService {
     constructor() {
-        this.signInListeners = []
-        this.signOutListeners = []
+        this.signInListeners = {}
+        this.signOutListeners = {}
 
-        this.token = null
-        this.userName = null
-        this.roles = []
-
-        this.getCurrentUser(response => {
-            this.token = response.token
-            this.userName = response.name
-            this.roles = response.roles
-        })
+        this.token = localStorage.getItem("jwt")
+        this.userName = localStorage.getItem("userName")
+        this.roles = localStorage.getItem("roles")
 
     }
 
-    getCurrentUser(doAfter) {
-        const requestOptions = {
-            method: 'GET',
-            credentials: 'include'
-        };
-
-    fetch(getApplicationProperty('applicationHost') + '/user', requestOptions)
-        .then(response => {
-            if (response.status == 200) {
-                return response.json()
-            } else {
-                return null
-            }
-        }).then(json => {
-            if (json) {
-                doAfter(json)
-            }
-        })
-    
+    addSignInListener(key, listener) {
+        if (!listener) {
+            throw 'Listener must not be null'
+        }
+        this.signInListeners[key] = listener
     }
 
-    addSignInListener(listener) {
-        this.signInListeners.push(listener)
-    }
-
-    addSignOutListener(listener) {
-        this.signOutListeners.push(listener)
+    addSignOutListener(key, listener) {
+        if (!listener) {
+            throw 'Listener must not be null'
+        }
+        this.signOutListeners[key] = listener
     }
 
     signIn(userName, password) {
@@ -76,12 +55,19 @@ class LoginService {
                     this.roles = result.roles
                     this.token = result.token
 
+                    localStorage.setItem("jwt", result.token)
+                    localStorage.setItem("userName", result.name)
+                    localStorage.setItem("roles", result.roles)
+
                     const user = {
                         name: this.userName
                     }
-                    this.signInListeners.forEach(listener => {
-                        listener(result.token, user)
-                    });
+
+                    for (var key in this.signInListeners) {
+                        if (this.signInListeners.hasOwnProperty(key)) {
+                            (this.signInListeners[key])(result.token, user)
+                        }
+                    }
                 })
             } else {
                 alert("Unknown user name or password");
@@ -92,9 +78,16 @@ class LoginService {
     signOut() {
         this.token = ""
         this.userName = ""
-        this.signOutListeners.forEach(listener => {
-            listener()
-        })
+        this.roles = []
+
+        localStorage.removeItem("jwt")
+        localStorage.removeItem("userName")
+        localStorage.removeItem("roles")
+        for (var key in this.signOutListeners) {
+            if (this.signOutListeners.hasOwnProperty(key)) {
+                (this.signOutListeners[key])()
+            }
+        }
     }
 }
 

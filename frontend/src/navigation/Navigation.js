@@ -13,16 +13,16 @@ export default function Navigation() {
 
     const loginService = useApplicationContext().loginService;
 
-    const [isLoggedIn, setLoggedIn] = useState(loginService.name)
-    const [userName, setUserName] = useState(loginService.name)
+    const [isLoggedIn, setLoggedIn] = useState(loginService.userName)
+    const [userName, setUserName] = useState(loginService.userName)
     const [loginFormDisplay, setLoginFormDisplay] = useState(false)
 
-    loginService.addSignInListener((token, user) => {
+    loginService.addSignInListener("navigation", (token, user) => {
       setLoggedIn(true)
       setUserName(user.name)
       setLoginFormDisplay(false)
     })
-    loginService.addSignOutListener(() => {
+    loginService.addSignOutListener("navigation", () => {
       setLoggedIn(false)
       setUserName(null)
     })

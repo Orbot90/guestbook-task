@@ -77,7 +77,7 @@ export default function Post(props) {
                                     <div class="text-muted h7 mb-2"> <i class="fa fa-clock-o"></i>Posted on: {date}</div>
                                     <div>
                                         {
-                                            roles.includes("ROLE_ADMIN") ?
+                                            roles && roles.includes("ROLE_ADMIN") ?
                                     <Dropdown>
                                         <Dropdown.Toggle variant="link" id="dropdown-basic">
                                         </Dropdown.Toggle>

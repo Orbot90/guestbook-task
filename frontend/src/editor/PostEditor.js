@@ -39,13 +39,15 @@ export default function PostEditor(props) {
     const [charactersCount, setCharactersCount] = useState(0)
     const [charactersLimitExceeded, setCharactersLimitExceeded] = useState(false)
 
-    loginService.addSignInListener(() => {
-        setLoggedIn(true)
-    })
+    if (mode == 'new') {
+        loginService.addSignInListener("postEditor", () => {
+            setLoggedIn(true)
+        })
 
-    loginService.addSignOutListener(() => {
-        setLoggedIn(false)
-    })
+        loginService.addSignOutListener("postEditor", () => {
+            setLoggedIn(false)
+        })
+    }
 
     const submit = () => {
         if (mode == "new") {

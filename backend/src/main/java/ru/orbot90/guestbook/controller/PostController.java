@@ -47,9 +47,11 @@ public class PostController {
     public List<Post> getAllPosts(TimeZone timeZone, Authentication authentication) {
 
         PostApproval approvalType;
+        String userName = null;
         if (authentication == null) {
             approvalType = PostApproval.APPROVED;
         } else {
+            userName = authentication.getName();
             Set<String> authoritiesSet = authentication.getAuthorities().stream()
                     .map(GrantedAuthority::getAuthority)
                     .collect(Collectors.toSet());
@@ -59,7 +61,7 @@ public class PostController {
                 approvalType = PostApproval.APPROVED;
             }
         }
-        return this.postService.getAllPosts(timeZone, approvalType);
+        return this.postService.getAllPosts(timeZone, approvalType, userName);
 
     }
 
