@@ -10,8 +10,6 @@ import ru.orbot90.guestbook.model.Post;
 import ru.orbot90.guestbook.model.PostApproval;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Comparator;
@@ -55,7 +53,7 @@ public class PostService {
         if (approval == PostApproval.APPROVED) {
             postsStream = postsStream.filter(PostEntity::isApproved);
         }
-                return postsStream.sorted(Comparator.comparing(PostEntity::getDate).reversed())
+                return postsStream.sorted(Comparator.comparing(PostEntity::getDate))
                 .map(post -> converToDTO(post, timeZone))
                 .collect(Collectors.toList());
     }

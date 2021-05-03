@@ -6,9 +6,14 @@ export default function PostsContainer() {
 
 
     const postService = useApplicationContext().postService
+    postService.addPostSubmitListener("postsContainer", () => {
+        console.log("Inside listener")
+        postService.getPosts()
+            .then((posts) => setPosts(posts))
+    })
     const postsPromise = postService.getPosts()
 
-    const [posts, setPosts] = useState([])
+    const [posts, setPosts] = useState(null)
     const [isRequested, setRequested] = useState(false)
 
     useEffect(() => {
@@ -16,18 +21,13 @@ export default function PostsContainer() {
             postsPromise.then(posts => setPosts(posts))
             setRequested(true)
         }
-      });
+      }, []);
 
-
-    const renderPosts = (posts) => {
-        
-    }
-
+    const postsElements = posts ? posts.map((element, id) => {
+        return <div key={id}><Post data={element} /></div>;
+    }) : [<div />]
+    console.log("Rendering")
     return <div>
-            {
-                posts.map(element => {
-                    return <Post data={element} />;
-                })
-            }
+            {postsElements.reverse()}
         </div>
 }

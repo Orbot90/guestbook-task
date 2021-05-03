@@ -37,7 +37,7 @@ export default function PostEditor() {
     })
 
     const submit = () => {
-        postService.submitPost(editorInstance, loginService.userName)
+        postService.submitPost(editorInstance, loginService.userName, loginService.token)
     }
     const ckeditor = () => {
         return <div className="border border-light bg-white rounded"><CKEditor

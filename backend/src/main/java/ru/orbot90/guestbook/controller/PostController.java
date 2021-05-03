@@ -3,6 +3,7 @@ package ru.orbot90.guestbook.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import ru.orbot90.guestbook.exception.DataNotFoundException;
@@ -29,10 +30,11 @@ public class PostController {
     }
 
     @PostMapping
-//    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Post> addPost(@RequestBody @Valid Post post, TimeZone timeZone) {
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity<Post> addPost(@RequestBody @Valid Post post, TimeZone timeZone,
+                                        Authentication authentication) {
 
-        // TODO check if is authenticated, add username
+        post.setUserName(authentication.getName());
         Post newPost = this.postService.createPost(post, timeZone);
         return new ResponseEntity<>(newPost, HttpStatus.CREATED);
     }
@@ -46,7 +48,6 @@ public class PostController {
 
     @GetMapping("/approved")
     @ResponseBody
-    @PreAuthorize("isAuthenticated()")
     public List<Post> getAllApprovedPosts(TimeZone timeZone) {
         return this.postService.getAllPosts(timeZone, PostApproval.APPROVED);
     }
@@ -76,5 +77,4 @@ public class PostController {
     }
 
     // TODO: add approve post for administrator
-    // TODO: add get method to get only approved posts (for regular users)
 }

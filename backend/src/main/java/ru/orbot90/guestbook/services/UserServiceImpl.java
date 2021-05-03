@@ -12,6 +12,7 @@ import ru.orbot90.guestbook.model.SignUpRequest;
 import ru.orbot90.guestbook.model.User;
 
 import javax.transaction.Transactional;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
@@ -64,7 +65,8 @@ public class UserServiceImpl implements UserService {
             UserEntity userEntity = new UserEntity();
             userEntity.setUserName("Dio_Brando");
             userEntity.setPassword(passwordEncoder.encode("zawarudo"));
-            userEntity.setRoles(Collections.singletonList(new RoleEntity("ROLE_ADMIN")));
+            userEntity.setRoles(Arrays.asList(new RoleEntity("ROLE_ADMIN"),
+                    new RoleEntity("ROLE_USER")));
             return userDao.save(userEntity);
         });
 

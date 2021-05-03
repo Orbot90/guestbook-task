@@ -8,6 +8,35 @@ class LoginService {
         this.token = null
         this.userName = null
         this.roles = []
+
+        this.getCurrentUser(response => {
+            this.token = response.token
+            this.userName = response.name
+            this.roles = response.roles
+        })
+
+    }
+
+    getCurrentUser(doAfter) {
+        const requestOptions = {
+            mode: 'cors',
+            method: 'GET',
+            credentials: 'include' 
+        };
+
+    const response = fetch(getApplicationProperty('applicationHost') + '/user', requestOptions)
+        .then(response => {
+            if (response.status == 200) {
+                return response.json()
+            } else {
+                return null
+            }
+        }).then(json => {
+            if (json) {
+                doAfter(json)
+            }
+        })
+    
     }
 
     addSignInListener(listener) {

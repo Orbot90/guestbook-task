@@ -2,12 +2,21 @@ import {getApplicationProperty} from '../properties/applicationProperties'
 
 class PostService {
 
-    submitPost(editor, username) {
+    constructor() {
+        this.postSubmitListeners = {};
+    }
+
+    addPostSubmitListener(name, listener) {
+        this.postSubmitListeners[name] = listener
+    }
+
+    submitPost(editor, username, token) {
         const data = editor.getData()
         const requestOptions = {
             mode: 'cors',
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json',
+                        'Authorization': token},
             body: JSON.stringify({ data: data, userName: username})
         };
         editor.disabled = true;
@@ -17,7 +26,11 @@ class PostService {
                 alert("Could not send post");
             } else {
                 editor.setData("")
-                // update all posts when the posts display implemented
+                for (var key in this.postSubmitListeners) {
+                    if (this.postSubmitListeners.hasOwnProperty(key)) {
+                        (this.postSubmitListeners[key])()
+                    }
+                }
             }
             editor.disabled = false;
         })
@@ -26,12 +39,16 @@ class PostService {
     async getPosts(onLoad) {
         const requestOptions = {
                 mode: 'cors',
-                method: 'GET' 
+                method: 'GET',
+                credentials: 'include' 
             };
 
         const response = await fetch(getApplicationProperty('applicationHost') + '/post', requestOptions)
-        const json = await response.json()
-        return json
+        if (response.status == 200) {
+            return await response.json()
+        } else {
+            return null
+        }
     }
 }
 
