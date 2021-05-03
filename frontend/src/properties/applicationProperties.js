@@ -1,11 +1,11 @@
 const prodMode = false
 
 const applicationProperies = {
-    prod: {
+    local: {
         imageUploadUrl: 'http://localhost:8080/image',
         applicationHost: 'http://localhost:8080'
     },
-    local: {
+    prod: {
         imageUploadUrl: 'http://35.233.110.226:8080/image',
         applicationHost: 'http://35.233.110.226:8080'
     }
