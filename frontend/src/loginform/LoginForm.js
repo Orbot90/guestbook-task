@@ -12,15 +12,21 @@ export default function LoginForm() {
         loginService.signIn(userName, password)
     }
 
+    const handleKeyPress = (target) => {
+        if(target.charCode==13){
+            login()
+        }
+    }
+
     return <div class="col-md-6 login-form-1">
             <form>
                 <div class="form-group">
                     <input type="text" class="form-control" placeholder="Username" 
-                        onChange={event => setUsername(event.target.value)} />
+                        onChange={event => setUsername(event.target.value)} onKeyPress={handleKeyPress}/>
                 </div>
                 <div class="form-group">
                     <input type="password" class="form-control" placeholder="Password" 
-                        onChange={event => setPassword(event.target.value)} />
+                        onChange={event => setPassword(event.target.value)} onKeyPress={handleKeyPress} />
                 </div>
                 <div class="form-group">
                     <Button className="btnSubmit" onClick={login}>Login</Button>
