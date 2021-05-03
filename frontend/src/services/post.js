@@ -39,8 +39,7 @@ class PostService {
     async getPosts(onLoad) {
         const requestOptions = {
                 mode: 'cors',
-                method: 'GET',
-                credentials: 'include' 
+                method: 'GET'
             };
 
         const response = await fetch(getApplicationProperty('applicationHost') + '/post', requestOptions)

@@ -20,8 +20,7 @@ class LoginService {
     getCurrentUser(doAfter) {
         const requestOptions = {
             mode: 'cors',
-            method: 'GET',
-            credentials: 'include' 
+            method: 'GET'
         };
 
     const response = fetch(getApplicationProperty('applicationHost') + '/user', requestOptions)
